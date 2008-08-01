@@ -49,15 +49,16 @@
   port = 192.168.21.9:8889
   protocol = protocol
   [mpm_event]
-  StartServers = 5
-  ServerLimit = 25
-  MinSpareThreads = 50
-  MaxSpareThreads = 1000
-  ThreadLimit = 200
-  ThreadsPerChild = 100
+  StartServers = 4
+  ServerLimit = 64
+  MinSpareThreads = 32
+  MaxSpareThreads = 500
+  ThreadLimit = 2000
+  ThreadsPerChild = 16
   MaxRequestsPerChild = 0 
   [misc]
-  logfile = log.txt
+  logfile = /../log.txt
+  #log.txt前请加上绝对路径
 
       服务器使用了多进程，每个进程又生成多个线程，以获得基于进程服务器的稳定性.
   服务器的工作原理是，由主控制进程生成“StartServers”个子进程，每个子进程中包含固定的ThreadsPerChild 线程数，
