@@ -10,6 +10,9 @@
 const char *file = "config.ini";
 static apr_pool_t *pglobal;
 
+static void ap_init_child(apr_pool_t *pchild)
+{
+}
 static int ap_process_connection(conn_state_t *cs)
 {
 	apr_bucket *b;
@@ -86,6 +89,7 @@ int main(int argc,const char * const argv[])
       
 	ap_init(file,&pglobal);
 
+	ap_hook_child_init(ap_init_child,NULL,NULL,APR_HOOK_MIDDLE);
 	ap_hook_process_connection(ap_process_connection,NULL,NULL,APR_HOOK_REALLY_LAST);
 	ap_mpm_run(pglobal);
 
