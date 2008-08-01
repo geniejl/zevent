@@ -12,10 +12,16 @@ static apr_pool_t *pglobal;
 
 static void ap_init_child(apr_pool_t *pchild)
 {
+     /*
+      * add what you want to initialize for one child process
+      */
      ap_log_error(APLOG_MARK,NULL,"init one child");
 }
 static int ap_process_connection(conn_state_t *cs)
 {
+	/*
+	 * code for your app,this just an example for echo test.
+	 */
 	apr_bucket *b;
 	char *msg;
 	int len=0;
