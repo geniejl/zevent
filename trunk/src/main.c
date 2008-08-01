@@ -12,6 +12,7 @@ static apr_pool_t *pglobal;
 
 static void ap_init_child(apr_pool_t *pchild)
 {
+     ap_log_error(APLOG_MARK,NULL,"init one child");
 }
 static int ap_process_connection(conn_state_t *cs)
 {
