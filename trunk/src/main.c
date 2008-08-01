@@ -3,7 +3,7 @@
 #include "apr_file_io.h"
 #include "apr_buckets.h"
 #include "ap_mpm.h"
-#include "ap_connection.h"
+#include "ap_hooks.h"
 #include "log.h"
 #include <stdlib.h>
 

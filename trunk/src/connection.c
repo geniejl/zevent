@@ -19,16 +19,10 @@
 
 #define CORE_PRIVATE
 #include "ap_config.h"
-#include "ap_connection.h"
 #include "server.h"
 #include "ap_mpm.h"
 #include "mpm_default.h"
 #include "scoreboard.h"
-
-APR_HOOK_STRUCT(
-	APR_HOOK_LINK(process_connection)
-	)
-AP_IMPLEMENT_HOOK_RUN_FIRST(int,process_connection,(conn_state_t *cs),(cs),DECLINED)
 
 /*
  * More machine-dependent networking gooo... on some systems,
