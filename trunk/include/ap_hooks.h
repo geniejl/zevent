@@ -1,5 +1,5 @@
-#ifndef AP_CONNECTION_H
-#define AP_CONNECTION_H
+#ifndef AP_HOOKS_H
+#define AP_HOOKS_H
 
 #include "server.h"
 #include "apr_hooks.h"
