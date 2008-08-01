@@ -1085,7 +1085,7 @@ static void child_main(int child_num_arg)
     /*stuff to do before we switch id's, so we have permissions. */
     ap_reopen_scoreboard(pchild, NULL, 0);
 
-//    ap_run_child_init(pchild);
+    ap_run_child_init(pchild);
 
     /* done with init critical section */
 
