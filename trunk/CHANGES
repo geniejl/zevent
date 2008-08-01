@@ -1,0 +1,7 @@
+                                                         -*- coding: utf-8 -*-
+Changes with zevent
+
+  *) 功能:
+     增加child_init挂钩for一些需要在进程启动时进行初始化工作的应用.  [zhoubug 2008/08/01 16:39:12]
+
+
