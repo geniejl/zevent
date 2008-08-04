@@ -17,7 +17,7 @@ static apr_pool_t *pglobal;
 static void ap_init_child(apr_pool_t *pchild)
 {
      /*
-      * add what you want to initialize for one child process
+      * add what you want to initialize for one child process,eg:database connection..
       */
      ap_log_error(APLOG_MARK,NULL,"init one child");
 }
