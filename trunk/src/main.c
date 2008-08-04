@@ -1,3 +1,7 @@
+/*
+ * just an echo server
+ */
+
 #include "apr.h"
 #include "apr_general.h"
 #include "apr_file_io.h"
