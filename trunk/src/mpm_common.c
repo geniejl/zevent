@@ -161,7 +161,7 @@ void ap_reclaim_child_processes(int terminate)
     extra_process_t *cur_extra;
     int not_dead_yet;
     int max_daemons = 16;
-    //ap_mpm_query(AP_MPMQ_MAX_DAEMON_USED, &max_daemons);
+    ap_mpm_query(AP_MPMQ_MAX_DAEMON_USED, &max_daemons);
     apr_time_t starttime = apr_time_now();
     /* this table of actions and elapsed times tells what action is taken
      * at which elapsed time from starting the reclaim
@@ -252,7 +252,7 @@ void ap_relieve_child_processes(void)
     extra_process_t *cur_extra;
     int max_daemons=16;
 
-    //ap_mpm_query(AP_MPMQ_MAX_DAEMON_USED, &max_daemons);
+    ap_mpm_query(AP_MPMQ_MAX_DAEMON_USED, &max_daemons);
 
     /* now see who is done */
     for (i = 0; i < max_daemons; ++i) {
