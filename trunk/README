@@ -12,7 +12,7 @@
   －－多进程+线程池使用epoll 的事件处理设计
   －－记分板机制的使用
   －－apr(apache runtime library)内存池的使用
-  －－apache中钩子(hooks)的设计及应用，钩子的设计使apache可以灵活开发各种扩展模块，在这里
+  －－apache中挂钩队列(hooks)的设计及应用，挂钩队列的设计使apache可以灵活开发各种扩展模块，在这里
   演示其使用方法。
   －－buckets and brigade的使用，结合内存池简洁高效的处理服务器中需要缓冲处理的各种
   数据包括（memory,file,socket,pipe)
