@@ -60,7 +60,7 @@
   logfile = /../log.txt
   #log.txt前请加上绝对路径
 
-      服务器使用了多进程，每个进程又生成多个线程，以获得基于进程服务器的稳定性.
+      服务器使用了多进程，每个进程又对应一个线程池，以获得基于进程服务器的稳定性.
   服务器的工作原理是，由主控制进程生成“StartServers”个子进程，每个子进程中包含固定的ThreadsPerChild 线程数，
   各个线程独立地处理请求。MinSpareThreads和MaxSpareThreads设置了最少和最多的空闲线程数.
 
