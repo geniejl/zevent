@@ -276,6 +276,7 @@ static void clean_child_exit(int code) __attribute__ ((noreturn));
 static void clean_child_exit(int code)
 {
     mpm_state = AP_MPMQ_STOPPING;
+    ap_run_child_fini(pchild);
     if (pchild) {
         apr_pool_destroy(pchild);
     }

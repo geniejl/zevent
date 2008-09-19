@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 	AP_DECLARE_HOOK(void,child_init,(apr_pool_t *pchild))
+	AP_DECLARE_HOOK(void,child_fini,(apr_pool_t *pchild))
 	AP_DECLARE_HOOK(int,process_connection,(conn_state_t *cs))
 #ifdef __cplusplus
 }
