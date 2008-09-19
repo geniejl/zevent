@@ -1,7 +1,9 @@
                                                          -*- coding: utf-8 -*-
 Changes with zevent
 
-  *) 功能:
-     增加child_init挂钩for一些需要在进程启动时进行初始化工作的应用.  [zhoubug 2008/08/01 16:39:12]
+  *) changes:
+     v1.1.2:
+     增加child_fini挂钩for子进程退出时相关资源的释放.[zhoubug 2008-09-19 15:01:08]
+     增加child_init挂钩for一些需要在子进程启动时进行初始化工作的应用.  [zhoubug 2008/08/01 16:39:12]
 
 

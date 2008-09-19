@@ -21,6 +21,13 @@ static void ap_init_child(apr_pool_t *pchild)
       */
      ap_log_error(APLOG_MARK,NULL,"init one child");
 }
+static void ap_fini_child(apr_pool_t *pchild)
+{
+     /*
+      * add what you want to do when one child process exit,eg:close database connection..
+      */
+     ap_log_error(APLOG_MARK,NULL,"fini one child");
+}
 static int ap_process_connection(conn_state_t *cs)
 {
 	/*
@@ -101,6 +108,8 @@ int main(int argc,const char * const argv[])
 	ap_init(file,&pglobal);
 
 	ap_hook_child_init(ap_init_child,NULL,NULL,APR_HOOK_MIDDLE);
+	ap_hook_child_fini(ap_fini_child,NULL,NULL,APR_HOOK_MIDDLE);
+
 	ap_hook_process_connection(ap_process_connection,NULL,NULL,APR_HOOK_REALLY_LAST);
 	ap_mpm_run(pglobal);
 
