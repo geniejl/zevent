@@ -1552,7 +1552,7 @@ static int worker_pre_init(apr_pool_t * p)
 {
     static int restart_num = 0;
     int no_detach, debug, foreground;
-    foreground = 0;
+    foreground = 1;
     no_detach = 0;
     apr_status_t rv;
 
