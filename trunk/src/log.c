@@ -77,7 +77,7 @@ static void log_error_core(const char *file, int line,apr_pool_t *pool,
                            const char *fmt, va_list args)
 {
 	char errstr[MAX_STRING_LEN];
-	apr_size_t len, errstrlen;
+	apr_size_t len=0;
 
 	if (file) {
 #if defined(_OSD_POSIX) || defined(WIN32) || defined(__MVS__)
