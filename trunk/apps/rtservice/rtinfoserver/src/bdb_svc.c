@@ -55,7 +55,11 @@ int open_env(DB_ENV **pdb_env,const char *home,const char *data_dir,
 		return rv;
 	}
 
-	(*pdb_env)->set_flags((*pdb_env),DB_TXN_NOSYNC | DB_LOG_AUTO_REMOVE,1);
+	if((rv =(*pdb_env)->set_flags((*pdb_env),
+					DB_TXN_NOSYNC | DB_LOG_AUTO_REMOVE,1) !=0))
+	{
+		return rv;
+	}
 
 	if((rv = (*pdb_env)->open((*pdb_env),home,flag,0)) != 0){
 
