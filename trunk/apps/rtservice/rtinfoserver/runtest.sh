@@ -1,3 +1,3 @@
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/apr/lib/
+export LD_LIBRARY_PATH=./:../../../../../usr/bin/:/usr/local/apr/lib/:/usr/local/BerkeleyDB.4.7/lib:$LD_LIBRARY_PATH
 ./rtserver
 

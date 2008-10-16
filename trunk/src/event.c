@@ -1612,6 +1612,11 @@ AP_DECLARE(int) ap_init(const char *inifile,apr_pool_t **pglobal)
         apr_hook_global_pool = *pglobal;
 	//apr_proc_detach(1);
 	d = (dictionary*)iniparser_load(inifile);
+	if(!d){
+		apr_pool_destroy(*pglobal);
+		apr_terminate();
+		return -1;
+	}
 	ap_open_stderr_log(*pglobal);
 	return 0;
 }

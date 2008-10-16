@@ -104,8 +104,9 @@ static int ap_process_connection(conn_state_t *cs)
 
 int main(int argc,const char * const argv[])
 {
-      
-	ap_init(file,&pglobal);
+
+	if(ap_init(file,&pglobal)==-1)
+		return -1;
 
 	ap_hook_child_init(ap_init_child,NULL,NULL,APR_HOOK_MIDDLE);
 	ap_hook_child_fini(ap_fini_child,NULL,NULL,APR_HOOK_MIDDLE);
