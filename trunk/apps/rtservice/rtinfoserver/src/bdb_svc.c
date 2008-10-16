@@ -55,6 +55,8 @@ int open_env(DB_ENV **pdb_env,const char *home,const char *data_dir,
 		return rv;
 	}
 
+	(*pdb_env)->set_flags((*pdb_env),DB_TXN_NOSYNC | DB_LOG_AUTO_REMOVE,1);
+
 	if((rv = (*pdb_env)->open((*pdb_env),home,flag,0)) != 0){
 
 		(*pdb_env)->close((*pdb_env),0);
@@ -115,7 +117,6 @@ int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 		return -1;
 	}
 
-	(*db_env)->set_flags((*db_env),DB_TXN_NOSYNC | DB_LOG_AUTO_REMOVE,1);
 
 	DBTYPE db_type = DB_BTREE;
 	u_int32_t db_flags = DB_CREATE | DB_THREAD | DB_AUTO_COMMIT;
