@@ -57,8 +57,9 @@
   ThreadsPerChild = 16
   MaxRequestsPerChild = 0 
   [misc]
-  logfile = /../log.txt
-  #log.txt前请加上绝对路径
+  debug = 0
+  logfile = log.txt
+  
 
       服务器使用了多进程，每个进程又对应一个线程池，以获得基于进程服务器的稳定性.
   服务器的工作原理是，由主控制进程生成“StartServers”个子进程，每个子进程中包含固定的ThreadsPerChild 线程数，
@@ -79,8 +80,12 @@
       系统采用的是事件触发回调机制，工作线程是否可尽快回归到线程池由使用者决定，处理得当就会得到
     很强的并发量和吞吐能力,可参加服务器中的处理方法。
 
-     #define DEFAULT_SERVER_LIMIT 16
-     #define MAX_SERVER_LIMIT 20000
+NEWS:2008-10-16 16:55:25
+    在apps文件夹内新增一个基于zevent开发的应用，使用Berkeley DB内存数据库，实现了一个类似memcache但
+支持数据持久保存，具有更好的安全性，强杀也可保证数据在重启时最大程度的恢复，可以应用在一些需要高速
+数据访问而memcache又不能满足数据安全性的地方。为刚好的满足现有互联网开发应用附带了一个结合此应用的
+apache module。详见apps/rtservice下README.
+
 
 
 =======================================bug report==================================================
