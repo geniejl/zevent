@@ -1556,6 +1556,8 @@ static int worker_pre_init(apr_pool_t * p)
     no_detach = 0;
     apr_status_t rv;
 
+    one_process = iniparser_getint(d,"misc:debug",0);
+
     mpm_state = AP_MPMQ_STARTING;
 
     
