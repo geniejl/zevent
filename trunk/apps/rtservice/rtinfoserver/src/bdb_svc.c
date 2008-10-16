@@ -20,7 +20,6 @@ static void *APR_THREAD_FUNC chkpnt_thread(apr_thread_t *thd,void *dummy)
 				return NULL;
 		}
 
-		ap_log_error(APLOG_MARK,NULL,"chkpnt!");
 		apr_sleep(apr_time_from_sec(CHKPNT_CYCLE));
 	}
 	apr_thread_exit(thd,APR_SUCCESS);
