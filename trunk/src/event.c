@@ -1552,11 +1552,16 @@ static int worker_pre_init(apr_pool_t * p)
 {
     static int restart_num = 0;
     int no_detach, debug, foreground;
+    char path[APR_PATH_MAX];
+    char *pwd = NULL;
     foreground = 0;
     no_detach = 0;
     apr_status_t rv;
 
     one_process = iniparser_getint(d,"misc:debug",0);
+    log = (char*)iniparser_getstring(d,"misc:logfile",NULL);
+    if(log)
+	    ap_replace_stderr_log(p,log);
 
     mpm_state = AP_MPMQ_STARTING;
 
@@ -1571,12 +1576,16 @@ static int worker_pre_init(apr_pool_t * p)
 	    apr_pollset_destroy(event_pollset);
 
 	    if (!one_process && !foreground) {
+                    pwd = getcwd(path,APR_PATH_MAX);
 		    rv = apr_proc_detach(no_detach ? APR_PROC_DETACH_FOREGROUND
 				    : APR_PROC_DETACH_DAEMONIZE);
 
 		    if (rv != APR_SUCCESS) {
 			    return -1;
 		    }
+		    chdir(pwd);
+		    if(log)
+			    ap_replace_stderr_log(p,log);
 	    }
 	    parent_pid = ap_my_pid = getpid();
     }
@@ -1591,10 +1600,7 @@ static int worker_pre_init(apr_pool_t * p)
     thread_limit = iniparser_getint(d,"mpm_event:ThreadLimit",-1);
     ap_threads_per_child = iniparser_getint(d,"mpm_event:ThreadsPerChild",-1);
 
-    log = (char*)iniparser_getstring(d,"misc:logfile",NULL);
-    if(log)
-	    ap_replace_stderr_log(p,log);
-
+    
     return OK;
 }
 

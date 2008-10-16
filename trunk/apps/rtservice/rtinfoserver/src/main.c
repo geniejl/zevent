@@ -10,7 +10,8 @@
 #include "iniparser.h"
 #include "protocol.h"
 
-const char *cfg = "/home/zhoubug/dev/svn_work/zsh/zevent/apps/rtservice/rtinfoserver/build/bin/config.ini";
+//const char *cfg = "/home/zhoubug/dev/svn_work/zsh/zevent/apps/rtservice/rtinfoserver/build/bin/config.ini";
+const char *cfg = "config.ini";
 static apr_pool_t *pglobal;
 DB_ENV *db_env = NULL;
 DB *dbp = NULL;
