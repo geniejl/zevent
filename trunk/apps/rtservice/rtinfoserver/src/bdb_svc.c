@@ -115,7 +115,7 @@ int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 		return -1;
 	}
 
-	(*db_env)->set_flags((*db_env),DB_TXN_NOSYNC | DB_LOG_AUTOREMOVE,1);
+	(*db_env)->set_flags((*db_env),DB_TXN_NOSYNC | DB_LOG_AUTO_REMOVE,1);
 
 	DBTYPE db_type = DB_BTREE;
 	u_int32_t db_flags = DB_CREATE | DB_THREAD | DB_AUTO_COMMIT;

@@ -7,7 +7,7 @@ ADD_DEFINITIONS(-D_LARGEFILE64_SOURCE)
 
 SET(APR_DIR /usr/local/apr)
 SET(APR_UTIL_DIR /usr/local/apr)
-SET(BERKELEY_DB_DIR /home/zhoubug/dev/BerkeleyDB.4.5)
+SET(BERKELEY_DB_DIR /usr/local/BerkeleyDB.4.7)
 SET(ZEVENT_SOURCE_DIR /home/zhoubug/dev/svn_work/zsh/zevent)
 SET(RTINFOSERVER_SOURCE_DIR /home/zhoubug/dev/svn_work/zsh/zevent/apps/rtservice/rtinfoserver)
 
