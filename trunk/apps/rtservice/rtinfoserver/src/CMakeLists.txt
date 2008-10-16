@@ -9,7 +9,7 @@ SET(APR_DIR /usr/local/apr)
 SET(APR_UTIL_DIR /usr/local/apr)
 SET(BERKELEY_DB_DIR /home/zhoubug/dev/BerkeleyDB.4.5)
 SET(ZEVENT_SOURCE_DIR /home/zhoubug/dev/svn_work/zsh/zevent)
-SET(RTINFOSERVER_SOURCE_DIR /home/zhoubug/dev/svn_work/zsh/rtinfoserver)
+SET(RTINFOSERVER_SOURCE_DIR /home/zhoubug/dev/svn_work/zsh/zevent/apps/rtservice/rtinfoserver)
 
 SET(INC_DIRS ${APR_DIR}/include/apr-1 ${APR_UTIL_DIR}/include/apr-1 ${BERKELEY_DB_DIR}/include 
 	${ZEVENT_SOURCE_DIR}/include ${RTINFOSERVER_SOURCE_DIR}/include)
