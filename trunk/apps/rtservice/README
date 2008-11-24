@@ -2,6 +2,7 @@
 
 rtinfoserver:
       一个类memcache但性能和安全性更优异的服务器
+      请将服务器配置为单进程模式使用
 mod_rt:
       一个和rtinfoserver通信的apache2 module
 
