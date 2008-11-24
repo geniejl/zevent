@@ -56,7 +56,7 @@ static void zevent_init(apr_pool_t *p)
 	{
 		return ;
 	}
-
+	iniparser_freedict(d);
 	return ;
 }
 
