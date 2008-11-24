@@ -54,16 +54,21 @@ int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 	if((rv = (*pdb_env)->set_lg_bsize((*pdb_env),cachesize)) != 0){
 		return rv;
 	}
-
 	if((rv =(*pdb_env)->set_flags((*pdb_env),
-					DB_TXN_NOSYNC | DB_LOG_AUTO_REMOVE,1) !=0))
+					DB_TXN_NOSYNC,1) !=0))
 	{
 		return rv;
 	}
 
+
 	if((rv = (*pdb_env)->open((*pdb_env),home,flag,0)) != 0){
 
 		(*pdb_env)->close((*pdb_env),0);
+		return rv;
+	}
+
+        if((rv=(*pdb_env)->log_set_config((*pdb_env),DB_LOG_AUTO_REMOVE,1) != 0))
+	{
 		return rv;
 	}
 
