@@ -16,7 +16,57 @@ static apr_pool_t *pglobal;
 DB_ENV *db_env = NULL;
 DB *dbp = NULL;
 
-static void ap_init_child(apr_pool_t *pchild)
+static void zevent_init(apr_pool_t *p)
+{
+	apr_status_t rv,thread_rv;
+	int ret;
+	char envdir[1024] = {'\0'};
+	char datadir[1024] = {'\0'};
+	char logdir[1024] = {'\0'};
+
+	dictionary *d = (dictionary *)iniparser_load(cfg);
+	if(!d)
+	{
+		ap_log_error(APLOG_MARK,NULL,"Call iniparser_load failed!\n");
+		return;
+	}
+	const char *dbhome = (char *)iniparser_getstring(d,"bdb:dbhome",NULL);
+	if(!dbhome)
+	{
+		ap_log_error(APLOG_MARK,NULL,"Call iniparser_getstring failed!\n");
+		return;
+	}
+
+	rv = apr_dir_make(dbhome,APR_UREAD | APR_UWRITE | APR_UEXECUTE,p);
+	apr_snprintf(envdir,sizeof(envdir),"%s/env",dbhome);
+	rv = apr_dir_make(envdir,APR_UREAD | APR_UWRITE |
+			APR_UEXECUTE,p);
+	apr_snprintf(datadir,sizeof(datadir),"%s/data",dbhome);
+	rv = apr_dir_make(datadir,APR_UREAD | APR_UWRITE |
+			APR_UEXECUTE,p);
+	apr_snprintf(logdir,sizeof(logdir),"%s/log",dbhome);
+	rv = apr_dir_make(logdir,APR_UREAD | APR_UWRITE | APR_UEXECUTE,p);
+
+        u_int32_t env_flags = DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG |
+		DB_INIT_MPOOL | DB_THREAD | DB_INIT_TXN | DB_RECOVER;
+
+
+	if((ret = openenv(&db_env,envdir,"../data","../log",
+					NULL,CACHE_SIZE,env_flags))!=0)
+	{
+		return ;
+	}
+
+	return ;
+}
+
+static void zevent_fini(apr_pool_t *p)
+{
+	closeenv(db_env);
+	ap_log_error(APLOG_MARK,NULL,"fini the app");
+}
+
+static void init_child(apr_pool_t *pchild)
 {
 	/*
 	 * add what you want to initialize for one child process,eg:database connection..
@@ -39,9 +89,9 @@ static void ap_init_child(apr_pool_t *pchild)
 	iniparser_freedict(d);
 }
 
-static void ap_fini_child(apr_pool_t *pchild)
+static void fini_child(apr_pool_t *pchild)
 {
-	closedb(db_env,dbp);
+	closedb(dbp);
 	ap_log_error(APLOG_MARK,NULL,"fini one child");
 }
 
@@ -209,8 +259,10 @@ int main(int argc,const char * const argv[])
 	if(ap_init(cfg,&pglobal)==-1)
 		return -1;
 
-	ap_hook_child_init(ap_init_child,NULL,NULL,APR_HOOK_MIDDLE);
-	ap_hook_child_fini(ap_fini_child,NULL,NULL,APR_HOOK_MIDDLE);
+	ap_hook_zevent_init(zevent_init,NULL,NULL,APR_HOOK_MIDDLE);
+	ap_hook_zevent_fini(zevent_fini,NULL,NULL,APR_HOOK_MIDDLE);
+	ap_hook_child_init(init_child,NULL,NULL,APR_HOOK_MIDDLE);
+	ap_hook_child_fini(fini_child,NULL,NULL,APR_HOOK_MIDDLE);
 
 	ap_hook_process_connection(ap_process_connection,NULL,NULL,APR_HOOK_REALLY_LAST);
 	ap_mpm_run(pglobal);

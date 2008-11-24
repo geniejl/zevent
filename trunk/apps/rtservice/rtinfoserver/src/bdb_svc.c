@@ -26,7 +26,7 @@ static void *APR_THREAD_FUNC chkpnt_thread(apr_thread_t *thd,void *dummy)
 	return NULL;
 }
 
-int open_env(DB_ENV **pdb_env,const char *home,const char *data_dir,
+int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 		const char *log_dir,FILE *err_file,
 		int cachesize,unsigned int flag)
 {
@@ -97,30 +97,6 @@ int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 {
 	apr_status_t rv,thread_rv;
 	int ret;
-	char envdir[1024] = {'\0'};
-	char datadir[1024] = {'\0'};
-	char logdir[1024] = {'\0'};
-
-	rv = apr_dir_make(dbhome,APR_UREAD | APR_UWRITE | APR_UEXECUTE,p);
-	apr_snprintf(envdir,sizeof(envdir),"%s/env",dbhome);
-	rv = apr_dir_make(envdir,APR_UREAD | APR_UWRITE |
-			APR_UEXECUTE,p);
-	apr_snprintf(datadir,sizeof(datadir),"%s/data",dbhome);
-	rv = apr_dir_make(datadir,APR_UREAD | APR_UWRITE |
-			APR_UEXECUTE,p);
-	apr_snprintf(logdir,sizeof(logdir),"%s/log",dbhome);
-	rv = apr_dir_make(logdir,APR_UREAD | APR_UWRITE | APR_UEXECUTE,p);
-
-        u_int32_t env_flags = DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG |
-		DB_INIT_MPOOL | DB_THREAD | DB_INIT_TXN | DB_RECOVER;
-
-
-	if((ret = open_env(db_env,envdir,"../data","../log",
-					NULL,CACHE_SIZE,env_flags))!=0)
-	{
-		return -1;
-	}
-
 
 	DBTYPE db_type = DB_BTREE;
 	u_int32_t db_flags = DB_CREATE | DB_THREAD | DB_AUTO_COMMIT;
@@ -143,13 +119,19 @@ int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 	return 0;
 }
 
-int closedb(DB_ENV *db_env,DB *dbp)
+int closedb(DB *dbp)
 {
-	shutdown_ = 1;
 	if(dbp)
 		dbp->close(dbp,0);
+	return 0;
+}
+
+int closeenv(DB_ENV *db_env)
+{
+	shutdown_ = 1;
 	if(db_env)
 		db_env->close(db_env,0);
+	return 0;
 }
 
 int set_store(DB *dbp,const PSTORE pstore)

@@ -1623,6 +1623,7 @@ AP_DECLARE(int) ap_init(const char *inifile,apr_pool_t **pglobal)
 
 AP_DECLARE(int) ap_fini(apr_pool_t **pglobal)
 {
+	ap_run_zevent_fini(*pglobal);
 	ap_log_close();
 	apr_pool_destroy(*pglobal);
 	apr_terminate();
@@ -1670,6 +1671,8 @@ AP_DECLARE(int) ap_mpm_run(apr_pool_t * p)
     }
 
     set_signals();
+
+    ap_run_zevent_init(p);
     /* Don't thrash... */
     if (max_spare_threads < min_spare_threads + ap_threads_per_child)
         max_spare_threads = min_spare_threads + ap_threads_per_child;

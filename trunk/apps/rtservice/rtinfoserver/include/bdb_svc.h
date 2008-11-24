@@ -15,7 +15,7 @@ extern "C" {
 #define CHKPNT_CYCLE (15)
 #define CACHE_SIZE (512*1024*1024)
 
-	int open_env(DB_ENV **pdb_env,const char *home,const char *data_dir,
+	int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 			const char *log_dir,FILE *err_file,
 			int cachesize,unsigned int flag);
 
