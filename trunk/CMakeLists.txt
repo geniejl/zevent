@@ -5,5 +5,5 @@ ADD_SUBDIRECTORY(src bin)
 INSTALL(FILES LICENSE README DESTINATION share/doc/zevent)
 INSTALL(FILES config.ini DESTINATION bin)
 INSTALL(PROGRAMS runtest.sh DESTINATION bin)
-INSTALL(DIRECTORY include/ DESTINATION /usr/local/lib/zevent/include)
+INSTALL(DIRECTORY include/ DESTINATION /usr/local/zevent/include)
 

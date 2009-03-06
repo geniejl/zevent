@@ -49,5 +49,5 @@ ADD_EXECUTABLE(echosvc ${SRC})
 TARGET_LINK_LIBRARIES(echosvc ${ZEVENT_LIB})
 
 INSTALL(TARGETS zevent echosvc RUNTIME DESTINATION bin
-	LIBRARY DESTINATION /usr/local/lib/zevent/lib)
+	LIBRARY DESTINATION /usr/local/zevent/lib)
 
