@@ -38,9 +38,9 @@
   $./configure --with-apr=/usr/local/apr/
   $make install
   =====最后一步=========
-  $./build.sh
+  $sudo ./build.sh
 
-  安装后的程序和动态库在当前目录usb/bin下
+  动态库和头文件会被安装在/usr/local/zevent目录下
 
   配置说明：
 
