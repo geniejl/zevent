@@ -11,7 +11,7 @@ SET(BERKELEY_DB_DIR /usr/local/BerkeleyDB.4.7)
 SET(ZEVENT_DIR /usr/local/zevent)
 #SET(RTINFOSERVER_SOURCE_DIR )
 
-MESSAGE(STATUS "dir:${PROJECT_SOURCE_DIR}")
+#MESSAGE(STATUS "dir:${PROJECT_SOURCE_DIR}")
 SET(INC_DIRS ${APR_DIR}/include/apr-1 ${APR_UTIL_DIR}/include/apr-1 ${BERKELEY_DB_DIR}/include 
 	${ZEVENT_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
