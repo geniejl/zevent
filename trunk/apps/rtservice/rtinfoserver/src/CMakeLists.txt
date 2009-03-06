@@ -9,10 +9,12 @@ SET(APR_DIR /usr/local/apr)
 SET(APR_UTIL_DIR /usr/local/apr)
 SET(BERKELEY_DB_DIR /usr/local/BerkeleyDB.4.7)
 SET(ZEVENT_DIR /usr/local/zevent)
-#SET(RTINFOSERVER_SOURCE_DIR /home/zhoubug/dev/svn_work/zsh/zevent/apps/rtservice/rtinfoserver)
+#SET(RTINFOSERVER_SOURCE_DIR )
 
+MESSAGE(STATUS "dir:${PROJECT_SOURCE_DIR}")
 SET(INC_DIRS ${APR_DIR}/include/apr-1 ${APR_UTIL_DIR}/include/apr-1 ${BERKELEY_DB_DIR}/include 
-	${ZEVENT_DIR}/include include)
+	${ZEVENT_DIR}/include ${PROJECT_SOURCE_DIR}/include)
+
 INCLUDE_DIRECTORIES(${INC_DIRS})
 
 SET(LINK_DIRS ${APR_DIR}/lib ${APR_UTIL_DIR}/lib ${BERKELEY_DB_DIR}/lib ${ZEVENT_DIR}/lib)
