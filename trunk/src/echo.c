@@ -6,6 +6,8 @@
 #include "apr_general.h"
 #include "apr_file_io.h"
 #include "apr_buckets.h"
+#include "apr_network_io.h"
+#include "apr_poll.h"
 #include "ap_mpm.h"
 #include "ap_hooks.h"
 #include "log.h"
@@ -39,28 +41,57 @@ static int ap_process_connection(conn_state_t *cs)
 	int olen = 0;
 	const char *buf;
 	apr_status_t rv;
+	
+	apr_sockaddr_t *from;
 
 	cs->pfd->reqevents = APR_POLLIN;
 
 	if(cs->pfd->rtnevents & APR_POLLIN){
 		len = 4096;
 		msg = (char *)apr_bucket_alloc(len,cs->baout);
+
 		if (msg == NULL) {
 			return -1;
 		}
-		rv = apr_socket_recv(cs->pfd->desc.s,msg,&len);
+
+		int protocol;
+		apr_socket_protocol_get(
+				cs->pfd->desc.s,
+				&protocol);
+
+		if(protocol == APR_PROTO_UDP)
+		{
+			rv = apr_socket_recvfrom(from,cs->pfd->desc.s,0,
+					msg,&len);
+		}
+		else
+			rv = apr_socket_recv(cs->pfd->desc.s,msg,&len);
+
 		if(rv != APR_SUCCESS)
 		{
 			ap_log_error(APLOG_MARK,NULL,"close socket!");
+
 			return -1;
 		}
 
-	//	ap_log_error(APLOG_MARK,NULL,"recv:%d\n",len);
+		ap_log_error(APLOG_MARK,NULL,"recv:%s\n",msg);
 
-		b = apr_bucket_heap_create(msg,len,NULL,cs->baout);
-		apr_bucket_free(msg);
-		APR_BRIGADE_INSERT_TAIL(cs->bbout,b);
-		cs->pfd->reqevents |= APR_POLLOUT;
+		if(protocol == APR_PROTO_UDP)
+		{
+			rv = apr_socket_sendto(cs->pfd->desc.s,from,0,msg,&len);
+			if(rv != APR_SUCCESS)
+			{
+				ap_log_error(APLOG_MARK,NULL,"close socket!");
+				return -1;
+			}
+		}
+		else
+		{
+			b = apr_bucket_heap_create(msg,len,NULL,cs->baout);
+			apr_bucket_free(msg);
+			APR_BRIGADE_INSERT_TAIL(cs->bbout,b);
+			cs->pfd->reqevents |= APR_POLLOUT;
+		}
 		
 	}
 	else {
@@ -72,7 +103,7 @@ static int ap_process_connection(conn_state_t *cs)
 				apr_bucket_read(b,&buf,&len,APR_BLOCK_READ);
 				olen = len;
 				//apr_brigade_flatten(cs->bbout,buf,&len);
-				rv = apr_socket_send(cs->pfd->desc.s,buf,&len);
+				rv = apr_file_write((apr_file_t *)cs->pfd->desc.s,buf,&len);
 
 				if((rv == APR_SUCCESS) && (len>=olen))
 				{
