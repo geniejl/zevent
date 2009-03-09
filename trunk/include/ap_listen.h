@@ -50,6 +50,7 @@ struct ap_listen_rec {
      * The default protocol for this listening socket.
      */
     const char* protocol;
+    int prototype;
 };
 
 /**

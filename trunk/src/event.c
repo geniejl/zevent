@@ -95,7 +95,8 @@ typedef struct
 typedef enum
 {
     PT_CSD,
-    PT_ACCEPT
+    PT_ACCEPT,
+    PT_UDP
 } poll_type_e;
 
 typedef struct
@@ -630,7 +631,10 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
         pfd.desc.s = lr->sd;
         pfd.reqevents = APR_POLLIN;
 
-        pt->type = PT_ACCEPT;
+	if(lr->prototype == APR_PROTO_UDP)
+		pt->type = PT_UDP;
+	else
+		pt->type = PT_ACCEPT;
         pt->baton = lr;
 
         pfd.client_data = pt;
@@ -669,7 +673,7 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
 
             pt = (listener_poll_type *) out_pfd->client_data;
 
-            if (pt->type == PT_CSD) {
+            if (pt->type == PT_CSD || pt->type == PT_UDP) {
 
                 /* one of the sockets is readable */
                 cs = (conn_state_t *) pt->baton;

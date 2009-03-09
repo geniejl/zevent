@@ -100,7 +100,7 @@ static apr_status_t make_sock(apr_pool_t *p, ap_listen_rec *server)
         return stat;
     }
 
-    if ((stat = apr_socket_listen(s, ap_listenbacklog)) != APR_SUCCESS) {
+    if (server->prototype == APR_PROTO_TCP && (stat = apr_socket_listen(s, ap_listenbacklog)) != APR_SUCCESS) {
         apr_socket_close(s);
         return stat;
     }
@@ -204,8 +204,19 @@ static const char *alloc_listener(apr_pool_t *p, char *addr,
         /* Go to the next sockaddr. */
         sa = sa->next;
 
-        status = apr_socket_create(&new->sd, new->bind_addr->family,
-                                    SOCK_STREAM, 0, p);
+	if(!apr_strnatcasecmp(new->protocol,"udp"))
+	{
+		new->prototype = APR_PROTO_UDP;
+		status = apr_socket_create(&new->sd, new->bind_addr->family,
+				SOCK_DGRAM, 0, p);
+	}
+	else
+	{
+
+		new->prototype = APR_PROTO_TCP;
+		status = apr_socket_create(&new->sd, new->bind_addr->family,
+				SOCK_STREAM, 0, p);
+	}
 
 #if APR_HAVE_IPV6
         /* What could happen is that we got an IPv6 address, but this system
