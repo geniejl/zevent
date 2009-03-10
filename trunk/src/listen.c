@@ -208,7 +208,7 @@ static const char *alloc_listener(apr_pool_t *p, char *addr,
 	{
 		new->prototype = APR_PROTO_UDP;
 		status = apr_socket_create(&new->sd, new->bind_addr->family,
-				SOCK_DGRAM, APR_PROTO_UDP, p);
+				SOCK_DGRAM, 0, p);
 	}
 	else
 	{

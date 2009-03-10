@@ -452,12 +452,9 @@ static int process_socket(apr_pool_t * p, apr_socket_t * sock,
                           conn_state_t * cs, int my_child_num,
                           int my_thread_num)
 {
-	int protocol;
 	if(ap_run_process_connection(cs) < 0)
 	{
-		apr_socket_protocol_get(sock,&protocol);
-		if(protocol != APR_PROTO_UDP)
-			ap_lingering_close(sock);
+		ap_lingering_close(sock);
 
 		apr_brigade_cleanup(cs->bbin);
 		apr_brigade_destroy(cs->bbin);
@@ -634,8 +631,11 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
         pfd.desc.s = lr->sd;
         pfd.reqevents = APR_POLLIN;
 
-	pt->type = PT_ACCEPT;
-	pt->baton = lr;
+	if(lr->prototype == APR_PROTO_UDP)
+		pt->type = PT_UDP;
+	else
+		pt->type = PT_ACCEPT;
+        pt->baton = lr;
 
         pfd.client_data = pt;
 
@@ -673,7 +673,7 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
 
             pt = (listener_poll_type *) out_pfd->client_data;
 
-            if (pt->type == PT_CSD) {
+            if (pt->type == PT_CSD || pt->type == PT_UDP) {
 
                 /* one of the sockets is readable */
                 cs = (conn_state_t *) pt->baton;
@@ -717,25 +717,19 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
 
                 apr_pool_tag(ptrans, "transaction");
 
-		if(lr->prototype == APR_PROTO_UDP)
-		{
-			csd = (void *)out_pfd->desc.s;
-		}
-		else
-		{
-			rc = lr->accept_func(&csd, lr, ptrans);
+                rc = lr->accept_func(&csd, lr, ptrans);
 
-			/* later we trash rv and rely on csd to indicate
-			 * success/failure
-			 */
+                /* later we trash rv and rely on csd to indicate
+                 * success/failure
+                 */
 
-			if (rc == APR_EGENERAL) {
-				/* E[NM]FILE, ENOMEM, etc */
-				resource_shortage = 1;
-				signal_threads(ST_GRACEFUL);
-			}
-		}
-		if (csd != NULL) {
+                if (rc == APR_EGENERAL) {
+                    /* E[NM]FILE, ENOMEM, etc */
+                    resource_shortage = 1;
+                    signal_threads(ST_GRACEFUL);
+                }
+
+                if (csd != NULL) {
 			//////////////add to pollset/////////////////
 			apr_pollfd_t *pfd = apr_pcalloc(ptrans,sizeof(*pfd));
 			pfd->desc_type = APR_POLL_SOCKET;
@@ -757,20 +751,7 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
 			cpt->baton = cs;
 		        pfd->client_data = cpt;
 
-			if(lr->prototype == APR_PROTO_UDP)
-			{
-				rc = push2worker(pfd, event_pollset);
-				if (rc != APR_SUCCESS) {
-					;
-				}
-				else {
-					have_idle_worker = 0;
-				}
-
-			}
-			else{
-				apr_pollset_add(event_pollset,pfd);
-			}
+			apr_pollset_add(event_pollset,pfd);
 
                 }
                 else {
