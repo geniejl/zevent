@@ -738,7 +738,7 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
 			cs->pollset = event_pollset;
 
 			cs->bain = apr_bucket_alloc_create(cs->p);
-			cs->bbin = apr_brigade_create(cs->p,cs->baout);
+			cs->bbin = apr_brigade_create(cs->p,cs->bain);
 			cs->baout = apr_bucket_alloc_create(cs->p);
 			cs->bbout = apr_brigade_create(cs->p,cs->baout);
 
