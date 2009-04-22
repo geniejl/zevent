@@ -100,7 +100,7 @@ int open_db(DB_ENV *pdb_env,DB **pdb,const char *db_name,
 
 int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 {
-	apr_status_t rv,thread_rv;
+	apr_status_t rv;
 	int ret;
 
 	DBTYPE db_type = DB_BTREE;

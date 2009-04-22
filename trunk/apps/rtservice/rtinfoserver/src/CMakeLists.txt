@@ -4,6 +4,9 @@ SET(SRC bdb_svc.c
 	)
 
 ADD_DEFINITIONS(-D_LARGEFILE64_SOURCE)
+SET(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g -pg -ggdb")
+SET(CMAKE_C_FLAGS_RELEASE "$ENV{CFLAGS} -O3 -Wall")
+
 
 SET(APR_DIR /usr/local/apr)
 SET(APR_UTIL_DIR /usr/local/apr)

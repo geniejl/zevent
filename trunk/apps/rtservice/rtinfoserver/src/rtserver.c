@@ -3,9 +3,11 @@
 #include "apr_general.h"
 #include "apr_file_io.h"
 #include "apr_buckets.h"
+#include "apr_strings.h"
 #include "ap_mpm.h"
 #include "ap_hooks.h"
 #include "log.h"
+#include "db.h"
 #include "bdb_svc.h"
 #include "iniparser.h"
 #include "protocol.h"
@@ -18,7 +20,7 @@ DB *dbp = NULL;
 
 static void zevent_init(apr_pool_t *p)
 {
-	apr_status_t rv,thread_rv;
+	apr_status_t rv;
 	int ret;
 	char envdir[1024] = {'\0'};
 	char datadir[1024] = {'\0'};
@@ -165,8 +167,8 @@ static int ap_process_connection(conn_state_t *cs)
 	 */
 	apr_bucket *b;
 	unsigned char *msg;
-	ssize_t msg_len = 0;
-	int len=0;
+	apr_size_t msg_len = 0;
+	apr_size_t len=0;
 	int i=0;
 	int olen = 0;
 	const char *buf;
@@ -178,7 +180,7 @@ static int ap_process_connection(conn_state_t *cs)
 		unsigned char length[sizeof(unsigned int)+1];
 		memset(length,0,sizeof(length));
 		len = sizeof(unsigned int);
-		rv = apr_socket_recv(cs->pfd->desc.s,length,&len);
+		rv = apr_socket_recv(cs->pfd->desc.s,(char *)length,&len);
 		if(rv != APR_SUCCESS)
 		{
 			ap_log_error(APLOG_MARK,NULL,"close socket!");
@@ -198,7 +200,7 @@ static int ap_process_connection(conn_state_t *cs)
 		if (msg == NULL) {
 			return -1;
 		}
-		rv = apr_socket_recv(cs->pfd->desc.s,msg+sizeof(unsigned int),&msg_len);
+		rv = apr_socket_recv(cs->pfd->desc.s,(char *)(msg+sizeof(unsigned int)),&msg_len);
 		if(rv != APR_SUCCESS)
 		{
 			ap_log_error(APLOG_MARK,NULL,"close socket!");
@@ -207,9 +209,9 @@ static int ap_process_connection(conn_state_t *cs)
 	//	ap_log_error(APLOG_MARK,NULL,"recv:%d\n",len);
 
                 int len = BUFFER_SIZE;
-                dispose(msg,&len);
+                dispose((char *)msg,&len);
 
-		b = apr_bucket_heap_create(msg,len,NULL,cs->baout);
+		b = apr_bucket_heap_create((const char *)msg,len,NULL,cs->baout);
 		apr_bucket_free(msg);
 		APR_BRIGADE_INSERT_TAIL(cs->bbout,b);
 		cs->pfd->reqevents |= APR_POLLOUT;
@@ -270,3 +272,4 @@ int main(int argc,const char * const argv[])
 	ap_fini(&pglobal);
 	return 0;
 }
+
