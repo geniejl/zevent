@@ -1,10 +1,10 @@
 #include "stdio.h"
 #include "storage.h"
 
-#define SHARED_SIZE (32*1024*1024)
+#define SHARED_SIZE (16*1024*1024)
 #define SHARED_FILENAME "testshm.shm"
 #define MUTEX_FILENAME "testshm.mutex"
-#define TEST_NUM (200000)
+#define TEST_NUM (100000)
 
 apr_pool_t *p;
 int main(int argc,const char *argv[])
@@ -57,7 +57,7 @@ int main(int argc,const char *argv[])
 	}
 	printf("store data complete!\n");
 
-	for(i=0;i<TEST_NUM; ++i)
+	for(i=0;i<10; ++i)
 	{
 		sprintf(key,"%d",i);
 		klen = strlen(key);
