@@ -27,6 +27,7 @@ extern "C" {
 
 	int opendb(const char *cfg,DB_ENV **db_env,DB **dbp,apr_pool_t *p);
 	int closedb();
+        int closeenv(DB_ENV *db_env);
 	
 	int set_store(DB *pdb,const PSTORE pstore);
 	int get_store(DB *pdb,PSTORE pstore);

@@ -57,6 +57,11 @@ struct ap_listen_rec {
  */
 AP_DECLARE_DATA extern ap_listen_rec *ap_listeners;
 
+AP_DECLARE_NONSTD(const char *) ap_set_listener(apr_pool_t *p,int argc,const char *argv[]);
+
+AP_DECLARE_NONSTD(void) ap_close_listeners(void);
+AP_DECLARE(int) ap_open_listeners(apr_pool_t *pool);
+
 #ifdef __cplusplus
 }
 #endif

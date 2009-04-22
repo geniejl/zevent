@@ -1,6 +1,7 @@
 #include "apr_network_io.h"
 #include "apr_strings.h"
 #include "apr_lib.h"
+#include "stdlib.h"
 
 #define APR_WANT_STRFUNC
 #include "apr_want.h"

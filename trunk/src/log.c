@@ -44,6 +44,7 @@ AP_DECLARE(apr_status_t) ap_open_log(apr_pool_t *p,const char *filename)
 AP_DECLARE(apr_status_t) ap_open_stderr_log(apr_pool_t *p)
 {
 	apr_file_open_stderr(&logfile,p);
+	return APR_SUCCESS;
 }
 
 AP_DECLARE(apr_status_t) ap_replace_stderr_log(apr_pool_t *p,

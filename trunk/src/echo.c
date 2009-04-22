@@ -35,7 +35,7 @@ static int ap_process_connection(conn_state_t *cs)
 	 */
 	apr_bucket *b;
 	char *msg;
-	int len=0;
+	apr_size_t len=0;
 	int olen = 0;
 	const char *buf;
 	apr_status_t rv;

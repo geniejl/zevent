@@ -123,6 +123,8 @@ struct conn_state_t {
 	apr_bucket_brigade *bbout;
 };
 
+AP_DECLARE(void) ap_lingering_close(apr_socket_t *csd);
+
 #define DECLINED -1/**< Module declines to handle */
 #define DONE -2/**< Module has served the response completely */
 #define OK 0

@@ -32,7 +32,9 @@
 #define CORE_PRIVATE
 
 #include "ap_config.h"
+#include "ap_hooks.h"
 #include "server.h"
+#include "iniparser.h"
 #include "dictionary.h"
 #include "ap_mpm.h"
 #include "pod.h"
@@ -59,12 +61,10 @@ static int server_limit = DEFAULT_SERVER_LIMIT;
 static int first_server_limit = 0;
 static int thread_limit = DEFAULT_THREAD_LIMIT;
 static int first_thread_limit = 0;
-static int changed_limit_at_restart;
 static int dying = 0;
 static int workers_may_exit = 0;
 static int start_thread_may_exit = 0;
 static int listener_may_exit = 0;
-static int num_listensocks = 0;
 static int resource_shortage = 0;
 static fd_queue_t *worker_queue;
 static fd_queue_info_t *worker_queue_info;
@@ -576,9 +576,7 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
     conn_state_t *cs;
     const apr_pollfd_t *out_pfd;
     apr_int32_t num = 0;
-    apr_time_t time_now = 0;
     apr_interval_time_t timeout_interval;
-    apr_time_t timeout_time;
     listener_poll_type *pt;
 
     free(ti);
@@ -607,12 +605,6 @@ static void *listener_thread(apr_thread_t * thd, void *dummy)
      * reason to make it more than ap_threads_per_child.
      */
 #define POLLSET_SCALE_FACTOR 1
-
-    if (rc != APR_SUCCESS) {
-        signal_threads(ST_GRACEFUL);
-        return NULL;
-    }
-
 
     /* Create the main pollset */
     rc = apr_pollset_create(&event_pollset,
@@ -797,7 +789,7 @@ static void *APR_THREAD_FUNC worker_thread(apr_thread_t * thd, void *dummy)
     ap_scoreboard_image->servers[process_slot][thread_slot].pid = ap_my_pid;
     ap_scoreboard_image->servers[process_slot][thread_slot].generation = ap_my_generation;
     ap_update_child_status_from_indexes(process_slot, thread_slot,
-                                        SERVER_STARTING, NULL);
+                                        SERVER_STARTING);
 
     while (!workers_may_exit) {
         if (!is_idle) {
@@ -810,7 +802,7 @@ static void *APR_THREAD_FUNC worker_thread(apr_thread_t * thd, void *dummy)
         }
 
         ap_update_child_status_from_indexes(process_slot, thread_slot,
-                                            SERVER_READY, NULL);
+                                            SERVER_READY);
       worker_pop:
         if (workers_may_exit) {
             break;
@@ -950,7 +942,7 @@ static void *APR_THREAD_FUNC start_threads(apr_thread_t * thd, void *dummy)
 
             /* We are creating threads right now */
             ap_update_child_status_from_indexes(my_child_num, i,
-                                                SERVER_STARTING, NULL);
+                                                SERVER_STARTING);
             /* We let each thread update its own scoreboard entry.  This is
              * done because it lets us deal with tid better.
              */
@@ -1227,7 +1219,7 @@ static int make_child(int slot)
         /* fork didn't succeed. Fix the scoreboard or else
          * it will say SERVER_STARTING forever and ever
          */
-        ap_update_child_status_from_indexes(slot, 0, SERVER_DEAD, NULL);
+        ap_update_child_status_from_indexes(slot, 0, SERVER_DEAD);
 
         /* In case system resources are maxxed out, we don't want
            Apache running away with the CPU trying to fork over and
@@ -1551,7 +1543,7 @@ static int worker_open_pod(apr_pool_t * p)
 static int worker_pre_init(apr_pool_t * p)
 {
     static int restart_num = 0;
-    int no_detach, debug, foreground;
+    int no_detach, foreground;
     char path[APR_PATH_MAX];
     char *pwd = NULL;
     foreground = 0;
@@ -1628,12 +1620,13 @@ AP_DECLARE(int) ap_fini(apr_pool_t **pglobal)
 	apr_pool_destroy(*pglobal);
 	apr_terminate();
 	iniparser_freedict(d);
+	return 0;
 }
 
 static int set_listener(apr_pool_t *p,dictionary *d)
 {
     const char *port =(char *)iniparser_getstring(d,"network:port",NULL);
-    const char *protocol = (char *)iniparser_getstring(d,"network:protocol",-1);
+    const char *protocol = (char *)iniparser_getstring(d,"network:protocol",NULL);
 
     const char * argv[2]={port,protocol};
     int argc = 2;
@@ -1725,7 +1718,6 @@ AP_DECLARE(int) ap_mpm_run(apr_pool_t * p)
          */
         int active_children;
         int index;
-        apr_time_t cutoff = 0;
 
         /* Close our listeners, and then ask our children to do same */
         ap_close_listeners();
