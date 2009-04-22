@@ -13,11 +13,11 @@ IF(APR-UTIL_FOUND)
 	SET(HAVE_LIBAPR-UTIL 1)
 ENDIF(APR-UTIL_FOUND)
 
-SET(SRC storage.c 
-        storage_util_mutex.c
-	storage_util_table.c
-	storage_shmht.c
-	storage_shmcb.c
+SET(SRC zcache.c 
+        zcache_util_mutex.c
+	zcache_util_table.c
+	zcache_shmht.c
+	zcache_shmcb.c
 	unixd_mutex.c
 	testzcache.c
 	)
