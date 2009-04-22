@@ -1,10 +1,18 @@
-#include "stdio.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
 #include "storage.h"
 
 #define SHARED_SIZE (16*1024*1024)
 #define SHARED_FILENAME "testshm.shm"
 #define MUTEX_FILENAME "testshm.mutex"
-#define TEST_NUM (100000)
+#define TEST_NUM (10000)
+
+
+void func(char *str, void *arg)
+{
+	printf("%s\n",str);
+}
 
 apr_pool_t *p;
 int main(int argc,const char *argv[])
@@ -52,19 +60,20 @@ int main(int argc,const char *argv[])
 
 		time_t expiry = time(NULL);
 		expiry += 1000;
-		if(!storage_store(&mc,key,klen, expiry,(void *)data,len))
+		if(!storage_store(&mc,(UCHAR*)key,klen, expiry,(void *)data,len))
 			printf("error store data key:%s\n",key);
 	}
 	printf("store data complete!\n");
+	storage_status(&mc,p,func,NULL);
 
-	for(i=0;i<10; ++i)
+	for(i=0;i<TEST_NUM; ++i)
 	{
 		sprintf(key,"%d",i);
 		klen = strlen(key);
 
-		void *pdata = storage_retrieve(&mc,key,klen,&len);
-		printf("key:%s,data:%s\n",key,(const char *)pdata);
-		storage_remove(&mc,key,klen);
+		void *pdata = storage_retrieve(&mc,(UCHAR*)key,klen,&len);
+	//	printf("key:%s,data:%s\n",key,(const char *)pdata);
+		storage_remove(&mc,(UCHAR*)key,klen);
 	}
 	///////////update///////////////
 	memset(key,0,sizeof(key));
@@ -77,15 +86,16 @@ int main(int argc,const char *argv[])
 
 	time_t expiry = time(NULL);
 	expiry += 1000;
-	if(!storage_store(&mc,key,klen, expiry,(void *)data,len))
+	if(!storage_store(&mc,(UCHAR*)key,klen, expiry,(void *)data,len))
 		printf("error store data key:%s\n",key);
 
 	sprintf(key,"%d",0);
 	klen = strlen(key);
 
-	void *pdata = storage_retrieve(&mc,key,klen,&len);
+	void *pdata = storage_retrieve(&mc,(UCHAR*)key,klen,&len);
 	printf("key:%s,newdata:%s\n",key,(const char *)pdata);
 	////////////////////////////////////////////
+	storage_status(&mc,p,func,NULL);
 
 	storage_kill(&mc);
 	return 0;

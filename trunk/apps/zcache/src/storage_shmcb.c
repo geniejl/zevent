@@ -2,6 +2,7 @@
  *  Session Cache via Shared Memory (Cyclic Buffer Variant)
  */
 #include <stdlib.h>
+#include <time.h>
 #include "storage.h"
 
 /*
@@ -188,7 +189,7 @@ void storage_shmcb_init(MCConfigRecord *mc,apr_pool_t *p)
    // }
 
     if (rv != APR_SUCCESS) {
-        char buf[100];
+        //char buf[100];
         /*ap_log_error(APLOG_MARK, APLOG_ERR, 0, s,
                      "Cannot allocate shared memory: (%d)%s", rv,
                      apr_strerror(rv, buf, sizeof(buf)));*/
@@ -236,7 +237,7 @@ void storage_shmcb_attach(MCConfigRecord *mc,apr_pool_t *p)
 		    mc->pPool);
     
     if (rv != APR_SUCCESS) {
-        char buf[100];
+        //char buf[100];
         /*ap_log_error(APLOG_MARK, APLOG_ERR, 0, s,
                      "Cannot allocate shared memory: (%d)%s", rv,
                      apr_strerror(rv, buf, sizeof(buf)));*/

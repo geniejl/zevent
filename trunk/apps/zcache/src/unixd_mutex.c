@@ -4,6 +4,7 @@
 #include "apr_portable.h"
 #include <sys/sem.h>
 #include <sys/prctl.h>
+#include <unistd.h>
 
 unixd_config_rec unixd_config;
 
