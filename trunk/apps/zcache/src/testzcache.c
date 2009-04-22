@@ -32,7 +32,7 @@ int main(int argc,const char *argv[])
 	mc.nMutexMode = STORAGE_MUTEXMODE_USED;
 	mc.szStorageDataFile = SHARED_FILENAME;
 	mc.nStorageDataSize = SHARED_SIZE;
-        mc.nStorageMode = STORAGE_SCMODE_SHMCB;
+        mc.nStorageMode = STORAGE_SCMODE_SHMHT;
 	mc.nMutexMech = APR_LOCK_DEFAULT;
 	mc.szMutexFile = MUTEX_FILENAME;
 
