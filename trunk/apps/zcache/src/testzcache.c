@@ -24,7 +24,6 @@ int main(int argc,const char *argv[])
 	if(rv != APR_SUCCESS)
 		printf("error\n");
 
-
 	MCConfigRecord mc;
 	mc.pStorageDataMM = NULL;
 	mc.pStorageDataRMM = NULL;
