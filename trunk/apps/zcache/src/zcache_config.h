@@ -32,8 +32,6 @@
 #include <unistd.h> /* needed for STDIN_FILENO et.al., at least on FreeBSD */
 #endif
 
-#include "zcache_util_table.h" 
-
 /*
 * Provide reasonable default for some defines
 */
@@ -86,7 +84,7 @@ typedef struct {
 	int             nStorageDataSize;
 	apr_shm_t      *pStorageDataMM;
 	apr_rmm_t      *pStorageDataRMM;
-	apr_table_t    *tStorageDataTable;
+	void    *tStorageDataTable;
 	zcache_mutexmode_t  nMutexMode;
 	apr_lockmech_e  nMutexMech;
 	const char     *szMutexFile;

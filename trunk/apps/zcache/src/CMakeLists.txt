@@ -15,7 +15,6 @@ ENDIF(APR-UTIL_FOUND)
 
 SET(SRC zcache.c 
         zcache_util_mutex.c
-	zcache_util_table.c
 	zcache_shmcb.c
 	unixd_mutex.c
 	testzcache.c

@@ -210,12 +210,8 @@ void zcache_shmcb_init(MCConfigRecord *mc,apr_pool_t *p)
     /*ap_log_error(APLOG_MARK, APLOG_INFO, 0, s,
                  "Shared memory session cache initialised");*/
 
-    /* 
-     * Success ... we hack the memory block into place by cheating for
-     * now and stealing a member variable the original shared memory
-     * cache was using. :-)
-     */
-    mc->tStorageDataTable = (table_t *) shm_segment;
+   
+    mc->tStorageDataTable = shm_segment;
     return;
 }
 
@@ -258,12 +254,7 @@ void zcache_shmcb_attach(MCConfigRecord *mc,apr_pool_t *p)
     /*ap_log_error(APLOG_MARK, APLOG_INFO, 0, s,
                  "Shared memory session cache initialised");*/
 
-    /* 
-     * Success ... we hack the memory block into place by cheating for
-     * now and stealing a member variable the original shared memory
-     * cache was using. :-)
-     */
-    mc->tStorageDataTable = (table_t *) shm_segment;
+    mc->tStorageDataTable = shm_segment;
     return;
 }
 
