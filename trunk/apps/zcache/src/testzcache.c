@@ -45,16 +45,25 @@ int main(int argc,const char *argv[])
 	char key[64];
 	int klen ;
 
-	char data[256];
+	char data[1024];
+	int index =0;
 	int i,len;
 	for(i=0;i<TEST_NUM;++i)
 	{
 		memset(key,0,sizeof(key));
-		sprintf(key,"%d",i);
+		sprintf(key,"%04d",i);
 		klen = strlen(key);
 
-	        memset(data,0,sizeof(data));
+	        //memset(data,0,sizeof(data));
+                //sprintf(data,"%d-test data!",i);
+                memset(data,0,sizeof(data));
+		memset(data,'a',sizeof(data)-1);
+
+		
                 sprintf(data,"%d-test data!",i);
+		index = strlen(data);
+	        data[index] = '*';	
+
 		len = strlen(data)+1;
 
 		time_t expiry = time(NULL);
@@ -67,16 +76,16 @@ int main(int argc,const char *argv[])
 
 	for(i=0;i<TEST_NUM; ++i)
 	{
-		sprintf(key,"%d",i);
+		sprintf(key,"%04d",i);
 		klen = strlen(key);
 
 		void *pdata = zcache_retrieve(&mc,(UCHAR*)key,klen,&len);
-	//	printf("key:%s,data:%s\n",key,(const char *)pdata);
+		printf("key:%s,data:%s\n",key,(const char *)pdata);
 		zcache_remove(&mc,(UCHAR*)key,klen);
 	}
 	///////////update///////////////
 	memset(key,0,sizeof(key));
-	sprintf(key,"%d",0);
+	sprintf(key,"%04d",0);
 	klen = strlen(key);
 
 	memset(data,0,sizeof(data));
@@ -88,7 +97,7 @@ int main(int argc,const char *argv[])
 	if(!zcache_store(&mc,(UCHAR*)key,klen, expiry,(void *)data,len))
 		printf("error store data key:%s\n",key);
 
-	sprintf(key,"%d",0);
+	sprintf(key,"%04d",0);
 	klen = strlen(key);
 
 	void *pdata = zcache_retrieve(&mc,(UCHAR*)key,klen,&len);
