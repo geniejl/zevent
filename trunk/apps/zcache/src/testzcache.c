@@ -6,7 +6,7 @@
 #define SHARED_SIZE (16*1024*1024)
 #define SHARED_FILENAME "testshm.shm"
 #define MUTEX_FILENAME "testshm.mutex"
-#define TEST_NUM (40000)
+#define TEST_NUM (10000)
 
 
 void func(char *str, void *arg)
