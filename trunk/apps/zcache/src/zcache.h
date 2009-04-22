@@ -252,15 +252,6 @@ void         zcache_expire(MCConfigRecord *mc);
 void         zcache_status(MCConfigRecord *mc,apr_pool_t *, void (*)(char *, void *), void *);
 char        *zcache_id2sz(UCHAR *, int);
 
-void         zcache_shmht_init(MCConfigRecord *mc,apr_pool_t *);
-
-void         zcache_shmht_kill(MCConfigRecord *mc);
-BOOL         zcache_shmht_store(MCConfigRecord *mc,UCHAR *, int, time_t, void *, int);
-void        *zcache_shmht_retrieve(MCConfigRecord *mc,UCHAR *, int, int*);
-void         zcache_shmht_remove(MCConfigRecord *mc,UCHAR *, int);
-void         zcache_shmht_expire(MCConfigRecord *mc);
-void         zcache_shmht_status(MCConfigRecord *mc,apr_pool_t *, void (*)(char *, void *), void *);
-
 void         zcache_shmcb_init(MCConfigRecord *mc,apr_pool_t *);
 void         zcache_shmcb_attach(MCConfigRecord *mc,apr_pool_t *);
 void         zcache_shmcb_kill(MCConfigRecord *mc);

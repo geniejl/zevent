@@ -132,13 +132,9 @@ void zcache_init(MCConfigRecord *mc,apr_pool_t *p)
 		return;
 	}
 
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT
-		||mc->nStorageMode == ZCACHE_SCMODE_SHMCB) 
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB) 
 	{
-		if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-			zcache_shmht_init(mc,p);
-		else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
-			zcache_shmcb_init(mc,p);
+		zcache_shmcb_init(mc,p);
 	}
 }
 
@@ -156,20 +152,14 @@ void zcache_attach(MCConfigRecord *mc,apr_pool_t *p)
 		return;
 	}
 
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT
-		||mc->nStorageMode == ZCACHE_SCMODE_SHMCB) 
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB) 
 	{
-		if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-			zcache_die();
-		else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
-			zcache_shmcb_attach(mc,p);
+		zcache_shmcb_attach(mc,p);
 	}
 }
 void zcache_kill(MCConfigRecord *mc)
 {
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-		zcache_shmht_kill(mc);
-	else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
 		zcache_shmcb_kill(mc);
 	return;
 }
@@ -178,9 +168,7 @@ BOOL zcache_store(MCConfigRecord *mc,UCHAR *id, int idlen, time_t expiry, void *
 {
 	BOOL rv = FALSE;
 
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-		rv = zcache_shmht_store(mc,id, idlen, expiry, pdata, ndata);
-	else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
 		rv = zcache_shmcb_store(mc,id, idlen, expiry, pdata, ndata);
 	return rv;
 }
@@ -189,27 +177,21 @@ void *zcache_retrieve(MCConfigRecord *mc,UCHAR *id, int idlen, int* ndata)
 {
 	void *pdata = NULL;
 
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-		pdata = zcache_shmht_retrieve(mc,id, idlen,ndata);
-	else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
 		pdata = zcache_shmcb_retrieve(mc,id, idlen,ndata);
 	return pdata;
 }
 
 void zcache_remove(MCConfigRecord *mc,UCHAR *id, int idlen)
 {
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-		zcache_shmht_remove(mc,id, idlen);
-	else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
 		zcache_shmcb_remove(mc,id, idlen);
 	return;
 }
 
 void zcache_status(MCConfigRecord *mc,apr_pool_t *p, void (*func)(char *, void *), void *arg)
 {
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-		zcache_shmht_status(mc,p, func, arg);
-	else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
 		zcache_shmcb_status(mc,p, func, arg);
 
 	return;
@@ -217,9 +199,7 @@ void zcache_status(MCConfigRecord *mc,apr_pool_t *p, void (*func)(char *, void *
 
 void zcache_expire(MCConfigRecord *mc)
 {
-	if (mc->nStorageMode == ZCACHE_SCMODE_SHMHT)
-		zcache_shmht_expire(mc);
-	else if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
+	if (mc->nStorageMode == ZCACHE_SCMODE_SHMCB)
 		zcache_shmcb_expire(mc);
 	return;
 }

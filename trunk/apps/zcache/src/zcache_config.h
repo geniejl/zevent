@@ -32,7 +32,8 @@
 #include <unistd.h> /* needed for STDIN_FILENO et.al., at least on FreeBSD */
 #endif
 
-#include "zcache_util_table.h"
+#include "zcache_util_table.h" 
+
 /*
 * Provide reasonable default for some defines
 */
@@ -64,9 +65,7 @@
 typedef enum {
 	ZCACHE_SCMODE_UNSET = UNSET,
 	ZCACHE_SCMODE_NONE  = 0,
-//	ZCACHE_SCMODE_DBM   = 1,
-	ZCACHE_SCMODE_SHMHT = 2,
-	ZCACHE_SCMODE_SHMCB = 3,
+	ZCACHE_SCMODE_SHMCB = 1,
 } zcache_scmode_t;
 
 /*
