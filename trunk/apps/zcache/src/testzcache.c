@@ -3,10 +3,10 @@
 #include <time.h>
 #include "zcache.h"
 
-#define SHARED_SIZE (16*1024*1024)
+#define SHARED_SIZE (32*1024*1024)
 #define SHARED_FILENAME "testshm.shm"
 #define MUTEX_FILENAME "testshm.mutex"
-#define TEST_NUM (10000)
+#define TEST_NUM (1)
 
 
 void func(char *str, void *arg)
@@ -45,13 +45,13 @@ int main(int argc,const char *argv[])
 	char key[64];
 	int klen ;
 
-	char data[1024];
+	char data[32];
 	int index =0;
 	int i,len;
 	for(i=0;i<TEST_NUM;++i)
 	{
 		memset(key,0,sizeof(key));
-		sprintf(key,"%04d",i);
+		sprintf(key,"%05d",i);
 		klen = strlen(key);
 
 	        //memset(data,0,sizeof(data));
@@ -60,7 +60,7 @@ int main(int argc,const char *argv[])
 		memset(data,'a',sizeof(data)-1);
 
 		
-                sprintf(data,"%d-test data!",i);
+                sprintf(data,"%05d-test data!",i);
 		index = strlen(data);
 	        data[index] = '*';	
 
@@ -74,18 +74,18 @@ int main(int argc,const char *argv[])
 	printf("store data complete!\n");
 	zcache_status(&mc,p,func,NULL);
 
-	for(i=0;i<TEST_NUM; ++i)
+	/*for(i=0;i<TEST_NUM; ++i)
 	{
-		sprintf(key,"%04d",i);
+		sprintf(key,"%05d",i);
 		klen = strlen(key);
 
 		void *pdata = zcache_retrieve(&mc,(UCHAR*)key,klen,&len);
 		printf("key:%s,data:%s\n",key,(const char *)pdata);
-		zcache_remove(&mc,(UCHAR*)key,klen);
-	}
+	//	zcache_remove(&mc,(UCHAR*)key,klen);
+	}*/
 	///////////update///////////////
 	memset(key,0,sizeof(key));
-	sprintf(key,"%04d",0);
+	sprintf(key,"%05d",0);
 	klen = strlen(key);
 
 	memset(data,0,sizeof(data));
@@ -97,7 +97,7 @@ int main(int argc,const char *argv[])
 	if(!zcache_store(&mc,(UCHAR*)key,klen, expiry,(void *)data,len))
 		printf("error store data key:%s\n",key);
 
-	sprintf(key,"%04d",0);
+	sprintf(key,"%05d",0);
 	klen = strlen(key);
 
 	void *pdata = zcache_retrieve(&mc,(UCHAR*)key,klen,&len);
