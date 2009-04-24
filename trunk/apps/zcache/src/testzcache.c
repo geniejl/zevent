@@ -46,7 +46,7 @@ int main(int argc,const char *argv[])
 	int klen ;
 
 	char data[32];
-	int index =0;
+	int index=0;
 	int i,len;
 	for(i=0;i<TEST_NUM;++i)
 	{
