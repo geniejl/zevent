@@ -12,15 +12,10 @@
 SET(APR_FOUND,"NO")
 
 FIND_PATH(APR_INCLUDE_DIR apr.h
-	/usr/include/
-	/usr/local/include/
 	/usr/local/apr/include/apr-1/
 	)
 
 FIND_LIBRARY(APR_LIBRARY apr-1
-	/usr/lib64
-	/usr/lib
-	/usr/local/lib
 	/usr/local/apr/lib
 	)
 
