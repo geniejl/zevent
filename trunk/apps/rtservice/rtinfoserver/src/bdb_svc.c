@@ -74,7 +74,7 @@ int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 
 	apr_threadattr_create(&thread_attr,p);
 	apr_threadattr_detach_set(thread_attr,1);
-	rv = apr_thread_create(&chkpnt_threadid,thread_attr,chkpnt_thread,*db_env,p);
+	rv = apr_thread_create(&chkpnt_threadid,thread_attr,chkpnt_thread,*pdb_env,p);
 	if(rv != APR_SUCCESS){
 		return -1;
 	}
@@ -107,7 +107,6 @@ int open_db(DB_ENV *pdb_env,DB **pdb,const char *db_name,
 
 int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 {
-	apr_status_t rv;
 	int ret;
 
 	DBTYPE db_type = DB_BTREE;
