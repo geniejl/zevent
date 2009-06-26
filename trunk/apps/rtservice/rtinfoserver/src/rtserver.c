@@ -54,7 +54,7 @@ static void zevent_init(apr_pool_t *p)
 
 
 	if((ret = openenv(&db_env,envdir,"../data","../log",
-					NULL,CACHE_SIZE,env_flags))!=0)
+					NULL,CACHE_SIZE,env_flags,p))!=0)
 	{
 		return ;
 	}

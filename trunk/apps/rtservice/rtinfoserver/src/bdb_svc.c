@@ -28,7 +28,7 @@ static void *APR_THREAD_FUNC chkpnt_thread(apr_thread_t *thd,void *dummy)
 
 int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 		const char *log_dir,FILE *err_file,
-		int cachesize,unsigned int flag)
+		int cachesize,unsigned int flag,apr_pool_t *p)
 {
 	int rv = -1;
 	if((rv = db_env_create(pdb_env,0)) != 0){
@@ -72,6 +72,13 @@ int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 		return rv;
 	}
 
+	apr_threadattr_create(&thread_attr,p);
+	apr_threadattr_detach_set(thread_attr,1);
+	rv = apr_thread_create(&chkpnt_threadid,thread_attr,chkpnt_thread,*db_env,p);
+	if(rv != APR_SUCCESS){
+		return -1;
+	}
+
 	return 0;
 }
 
@@ -109,14 +116,7 @@ int opendb(const char *dbhome,DB_ENV **db_env,DB **dbp,apr_pool_t *p)
 	{
 		return -1;
 	}
-
-	apr_threadattr_create(&thread_attr,p);
-	apr_threadattr_detach_set(thread_attr,1);
-	rv = apr_thread_create(&chkpnt_threadid,thread_attr,chkpnt_thread,*db_env,p);
-	if(rv != APR_SUCCESS){
-		return -1;
-	}
-
+	
 /*	rv = apr_thread_join(&thread_rv,chkpnt_threadid);
 	if(rv != APR_SUCCESS)
 	{

@@ -17,7 +17,7 @@ extern "C" {
 
 	int openenv(DB_ENV **pdb_env,const char *home,const char *data_dir,
 			const char *log_dir,FILE *err_file,
-			int cachesize,unsigned int flag);
+			int cachesize,unsigned int flag,apr_pool_t *p);
 
 	int open_db(DB_ENV *pdb_env,DB **pdb,const char *db_name,
 			DBTYPE type,unsigned int open_flags,
