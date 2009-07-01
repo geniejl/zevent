@@ -1078,8 +1078,6 @@ static void child_main(int child_num_arg)
     /*stuff to do before we switch id's, so we have permissions. */
     ap_reopen_scoreboard(pchild, NULL, 0);
 
-    ap_run_child_init(pchild);
-
     /* done with init critical section */
 
     /* Just use the standard apr_setup_signal_thread to block all signals
@@ -1091,6 +1089,7 @@ static void child_main(int child_num_arg)
         clean_child_exit(APEXIT_CHILDFATAL);
     }
 
+    ap_run_child_init(pchild);
 
     /* Setup worker threads */
 
