@@ -112,8 +112,10 @@ static void log_error_core(const char *file, int line,apr_pool_t *pool,
 			file = p + 1;
 		}
 #endif /*_OSD_POSIX || WIN32 */
+		char time_str[APR_CTIME_LEN];                                          
+		apr_ctime(time_str, apr_time_now());
 		len += apr_snprintf(errstr + len, MAX_STRING_LEN - len,
-				"%s(%d): ", file, line);
+				"[%s]%s(%d): ",time_str,file, line);
 	}
 
 	len += apr_vsnprintf(errstr+len, MAX_STRING_LEN-len, fmt, args);
