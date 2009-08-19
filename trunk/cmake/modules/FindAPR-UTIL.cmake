@@ -13,10 +13,12 @@
 SET(APR-UTIL_FOUND,"NO")
 FIND_PATH(APR-UTIL_INCLUDE_DIR apu.h
 	/usr/local/apr/include/apr-1/
+	/usr/local/apr-util/include/apr-1/
 	)
 
 FIND_LIBRARY(APR-UTIL_LIBRARY aprutil-1
 	/usr/local/apr/lib
+	/usr/local/apr-util/lib
 	)
 
 IF (APR-UTIL_LIBRARY)
