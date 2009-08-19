@@ -1558,7 +1558,7 @@ static int worker_pre_init(apr_pool_t * p)
 		    if (rv != APR_SUCCESS) {
 			    return -1;
 		    }
-		    chdir(pwd);
+		    rv = chdir(pwd);
 		    if(log)
 			    ap_replace_stderr_log(p,log);
 	    }
