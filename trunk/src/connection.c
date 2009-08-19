@@ -1,11 +1,9 @@
 #include "apr.h"
 #include "apr_strings.h"
 
-#define CORE_PRIVATE
-#include "ap_config.h"
+#include "zevent_config.h"
 #include "server.h"
-#include "ap_mpm.h"
-#include "mpm_default.h"
+#include "event.h"
 #include "scoreboard.h"
 
 /*

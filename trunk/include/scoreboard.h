@@ -17,7 +17,7 @@ extern "C" {
 #include <time.h>
 #endif
 
-#include "ap_config.h"
+#include "zevent_config.h"
 #include "apr_hooks.h"
 #include "apr_thread_proc.h"
 #include "apr_portable.h"

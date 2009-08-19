@@ -1,14 +1,3 @@
-/* The purpose of this file is to store the code that MOST mpm's will need
- * this does not mean a function only goes into this file if every MPM needs
- * it.  It means that if a function is needed by more than one MPM, and
- * future maintenance would be served by making the code common, then the
- * function belongs here.
- *
- * This is going in src/main because it is not platform specific, it is
- * specific to multi-process servers, but NOT to Unix.  Which is why it
- * does not belong in src/os/unix
- */
-
 #include <unistd.h>
 #include <stdlib.h>
 #include "apr.h"
@@ -20,29 +9,16 @@
 #include "apr_getopt.h"
 #include "apr_allocator.h"
 
-#include "mpm.h"
 #include "mpm_common.h"
-#include "ap_mpm.h"
+#include "event.h"
 #include "ap_listen.h"
-#include "mpm_default.h"
 #include "server.h"
 #include "log.h"
 
-#ifdef AP_MPM_WANT_SET_SCOREBOARD
 #include "scoreboard.h"
-#endif
 
-#ifdef HAVE_PWD_H
 #include <pwd.h>
-#endif
-#ifdef HAVE_GRP_H
 #include <grp.h>
-#endif
-#if APR_HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifdef AP_MPM_WANT_RECLAIM_CHILD_PROCESSES
 
 typedef enum {DO_NOTHING, SEND_SIGTERM, SEND_SIGKILL, GIVEUP} action_t;
 
@@ -269,7 +245,6 @@ void ap_relieve_child_processes(void)
  * processes; or by using getpgid() directly, if available. */
 apr_status_t ap_mpm_safe_kill(pid_t pid, int sig)
 {
-#ifndef HAVE_GETPGID
     apr_proc_t proc;
     apr_status_t rv;
     apr_exit_why_e why;
@@ -283,11 +258,9 @@ apr_status_t ap_mpm_safe_kill(pid_t pid, int sig)
     proc.pid = pid;
     rv = apr_proc_wait(&proc, &status, &why, APR_NOWAIT);
     if (rv == APR_CHILD_DONE) {
-#ifdef AP_MPM_WANT_PROCESS_CHILD_STATUS
         /* The child already died - log the termination status if
          * necessary: */
         ap_process_child_status(&proc, why, status);
-#endif
         return APR_EINVAL;
     }
     else if (rv != APR_CHILD_NOTDONE) {
@@ -295,7 +268,6 @@ apr_status_t ap_mpm_safe_kill(pid_t pid, int sig)
          * log this either way. */
         return APR_EINVAL;
     }
-#else
     pid_t pg;
 
     /* Ensure pid sanity. */
@@ -312,13 +284,9 @@ apr_status_t ap_mpm_safe_kill(pid_t pid, int sig)
     if (pg != getpgrp()) {
         return APR_EINVAL;
     }
-#endif        
-
     return kill(pid, sig) ? errno : APR_SUCCESS;
 }
-#endif /* AP_MPM_WANT_RECLAIM_CHILD_PROCESSES */
 
-#ifdef AP_MPM_WANT_WAIT_OR_TIMEOUT
 
 /* number of calls to wait_or_timeout between writable probes */
 #ifndef INTERVAL_OF_WRITABLE_PROBES
@@ -357,9 +325,7 @@ void ap_wait_or_timeout(apr_exit_why_e *status, int *exitcode, apr_proc_t *ret,
     ret->pid = -1;
     return;
 }
-#endif /* AP_MPM_WANT_WAIT_OR_TIMEOUT */
 
-#ifdef AP_MPM_WANT_PROCESS_CHILD_STATUS
 int ap_process_child_status(apr_proc_t *pid, apr_exit_why_e why, int status)
 {
     int signum = status;
@@ -402,7 +368,6 @@ int ap_process_child_status(apr_proc_t *pid, apr_exit_why_e why, int status)
     }
     return 0;
 }
-#endif /* AP_MPM_WANT_PROCESS_CHILD_STATUS */
 
 #if defined(TCP_NODELAY) && !defined(MPE) && !defined(TPF)
 void ap_sock_disable_nagle(apr_socket_t *s)
@@ -424,7 +389,6 @@ void ap_sock_disable_nagle(apr_socket_t *s)
 }
 #endif
 
-#ifdef HAVE_GETPWNAM
 AP_DECLARE(uid_t) ap_uname2id(const char *name)
 {
     struct passwd *ent;
@@ -438,9 +402,7 @@ AP_DECLARE(uid_t) ap_uname2id(const char *name)
 
     return (ent->pw_uid);
 }
-#endif
 
-#ifdef HAVE_GETGRNAM
 AP_DECLARE(gid_t) ap_gname2id(const char *name)
 {
     struct group *ent;
@@ -454,7 +416,6 @@ AP_DECLARE(gid_t) ap_gname2id(const char *name)
 
     return (ent->gr_gid);
 }
-#endif
 
 #ifndef HAVE_INITGROUPS
 int initgroups(const char *name, gid_t basegid)
@@ -489,188 +450,4 @@ int initgroups(const char *name, gid_t basegid)
 }
 #endif /* def NEED_INITGROUPS */
 
-#ifdef AP_MPM_USES_POD
-
-AP_DECLARE(apr_status_t) ap_mpm_pod_open(apr_pool_t *p, ap_pod_t **pod)
-{
-    apr_status_t rv;
-
-    *pod = apr_palloc(p, sizeof(**pod));
-    rv = apr_file_pipe_create(&((*pod)->pod_in), &((*pod)->pod_out), p);
-    if (rv != APR_SUCCESS) {
-        return rv;
-    }
-
-    apr_file_pipe_timeout_set((*pod)->pod_in, 0);
-    (*pod)->p = p;
-
-    /* close these before exec. */
-    apr_file_inherit_unset((*pod)->pod_in);
-    apr_file_inherit_unset((*pod)->pod_out);
-
-    return APR_SUCCESS;
-}
-
-AP_DECLARE(apr_status_t) ap_mpm_pod_check(ap_pod_t *pod)
-{
-    char c;
-    apr_size_t len = 1;
-    apr_status_t rv;
-
-    rv = apr_file_read(pod->pod_in, &c, &len);
-
-    if ((rv == APR_SUCCESS) && (len == 1)) {
-        return APR_SUCCESS;
-    }
-
-    if (rv != APR_SUCCESS) {
-        return rv;
-    }
-
-    return AP_NORESTART;
-}
-
-AP_DECLARE(apr_status_t) ap_mpm_pod_close(ap_pod_t *pod)
-{
-    apr_status_t rv;
-
-    rv = apr_file_close(pod->pod_out);
-    if (rv != APR_SUCCESS) {
-        return rv;
-    }
-
-    rv = apr_file_close(pod->pod_in);
-    if (rv != APR_SUCCESS) {
-        return rv;
-    }
-
-    return APR_SUCCESS;
-}
-
-static apr_status_t pod_signal_internal(ap_pod_t *pod)
-{
-    apr_status_t rv;
-    char char_of_death = '!';
-    apr_size_t one = 1;
-
-    rv = apr_file_write(pod->pod_out, &char_of_death, &one);
-    if (rv != APR_SUCCESS) {
-	    ;
-    }
-
-    return rv;
-}
-
-/* This function connects to the server, then immediately closes the connection.
- * This permits the MPM to skip the poll when there is only one listening
- * socket, because it provides a alternate way to unblock an accept() when
- * the pod is used.
- */
-static apr_status_t dummy_connection(ap_pod_t *pod)
-{
-    char *srequest;
-    apr_status_t rv;
-    apr_socket_t *sock;
-    apr_pool_t *p;
-    apr_size_t len;
-
-    /* create a temporary pool for the socket.  pconf stays around too long */
-    rv = apr_pool_create(&p, pod->p);
-    if (rv != APR_SUCCESS) {
-        return rv;
-    }
-
-    rv = apr_socket_create(&sock, ap_listeners->bind_addr->family,
-                           SOCK_STREAM, 0, p);
-    if (rv != APR_SUCCESS) {
-        apr_pool_destroy(p);
-        return rv;
-    }
-
-    /* on some platforms (e.g., FreeBSD), the kernel won't accept many
-     * queued connections before it starts blocking local connects...
-     * we need to keep from blocking too long and instead return an error,
-     * because the MPM won't want to hold up a graceful restart for a
-     * long time
-     */
-    rv = apr_socket_timeout_set(sock, apr_time_from_sec(3));
-    if (rv != APR_SUCCESS) {
-        apr_socket_close(sock);
-        apr_pool_destroy(p);
-        return rv;
-    }
-
-    rv = apr_socket_connect(sock, ap_listeners->bind_addr);
-    if (rv != APR_SUCCESS) {
-        int log_level = APLOG_WARNING;
-
-        if (APR_STATUS_IS_TIMEUP(rv)) {
-            /* probably some server processes bailed out already and there
-             * is nobody around to call accept and clear out the kernel
-             * connection queue; usually this is not worth logging
-             */
-            log_level = APLOG_DEBUG;
-        }
-
-    }
-
-    /* Create the request string. We include a User-Agent so that
-     * adminstrators can track down the cause of the odd-looking
-     * requests in their logs.
-     */
-    srequest = apr_pstrcat(p, "OPTIONS * HTTP/1.0\r\nUser-Agent: ",
-                           ap_get_server_banner(),
-                           " (internal dummy connection)\r\n\r\n", NULL);
-
-    /* Since some operating systems support buffering of data or entire
-     * requests in the kernel, we send a simple request, to make sure
-     * the server pops out of a blocking accept().
-     */
-    /* XXX: This is HTTP specific. We should look at the Protocol for each
-     * listener, and send the correct type of request to trigger any Accept
-     * Filters.
-     */
-    len = strlen(srequest);
-    apr_socket_send(sock, srequest, &len);
-    apr_socket_close(sock);
-    apr_pool_destroy(p);
-
-    return rv;
-}
-
-AP_DECLARE(apr_status_t) ap_mpm_pod_signal(ap_pod_t *pod)
-{
-    apr_status_t rv;
-
-    rv = pod_signal_internal(pod);
-    if (rv != APR_SUCCESS) {
-        return rv;
-    }
-
-    return dummy_connection(pod);
-}
-
-void ap_mpm_pod_killpg(ap_pod_t *pod, int num)
-{
-    int i;
-    apr_status_t rv = APR_SUCCESS;
-
-    /* we don't write anything to the pod here...  we assume
-     * that the would-be reader of the pod has another way to
-     * see that it is time to die once we wake it up
-     *
-     * writing lots of things to the pod at once is very
-     * problematic... we can fill the kernel pipe buffer and
-     * be blocked until somebody consumes some bytes or
-     * we hit a timeout...  if we hit a timeout we can't just
-     * keep trying because maybe we'll never successfully
-     * write again...  but then maybe we'll leave would-be
-     * readers stranded (a number of them could be tied up for
-     * a while serving time-consuming requests)
-     */
-    for (i = 0; i < num && rv == APR_SUCCESS; i++) {
-        rv = dummy_connection(pod);
-    }
-}
-#endif /* #ifdef AP_MPM_USES_POD */
 

@@ -152,7 +152,7 @@
         APR_OPTIONAL_HOOK(ap,name,fn,pre,succ,order)
 
 #if !defined(WIN32) && !defined(NETWARE)
-//#include "ap_config_auto.h"
+#include "ap_config_auto.h"
 #endif
 #if defined(NETWARE)
 #define AP_NONBLOCK_WHEN_MULTI_LISTEN 1

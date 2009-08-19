@@ -29,27 +29,21 @@
 #error The Event MPM requires APR threads, but they are unavailable.
 #endif
 
-#define CORE_PRIVATE
-
-#include "ap_config.h"
-#include "ap_hooks.h"
+#include "zevent_config.h"
+#include "zevent_hooks.h"
 #include "server.h"
 #include "iniparser.h"
 #include "dictionary.h"
-#include "ap_mpm.h"
+#include "event.h"
 #include "pod.h"
 #include "mpm_common.h"
 #include "ap_listen.h"
 #include "scoreboard.h"
 #include "fdqueue.h"
-#include "mpm_default.h"
 #include "log.h"
 
 #include <signal.h>
 
-/*
- * Actual definitions of config globals
- */
 static dictionary *d = NULL;
 static char *log = NULL;
 int ap_threads_per_child = 0;   /* Worker threads per child */
@@ -115,6 +109,22 @@ typedef struct
 int ap_max_daemons_limit = -1;
 
 static ap_pod_t *pod;
+
+/* *Non*-shared http_main globals... */
+
+
+/* The worker MPM respects a couple of runtime flags that can aid
+ * in debugging. Setting the -DNO_DETACH flag will prevent the root process
+ * from detaching from its controlling terminal. Additionally, setting
+ * the -DONE_PROCESS flag (which implies -DNO_DETACH) will get you the
+ * child_main loop running in the process which originally started up.
+ * This gives you a pretty nice debugging environment.  (You'll get a SIGHUP
+ * early in standalone_main; just continue through.  This is the server
+ * trying to kill off any child processes which it might have lying
+ * around --- Apache doesn't keep track of their pids, it just sends
+ * SIGHUP to the process group, ignoring it in the root process.
+ * Continue through and you'll be fine.).
+ */
 
 static int one_process = 0;
 
@@ -1558,7 +1568,7 @@ static int worker_pre_init(apr_pool_t * p)
 		    if (rv != APR_SUCCESS) {
 			    return -1;
 		    }
-		    rv = chdir(pwd);
+		    chdir(pwd);
 		    if(log)
 			    ap_replace_stderr_log(p,log);
 	    }

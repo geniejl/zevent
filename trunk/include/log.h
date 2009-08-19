@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include "apr_thread_proc.h"
-#include "ap_config.h"
+#include "zevent_config.h"
 
 #define APLOG_MARK	__FILE__,__LINE__
 
