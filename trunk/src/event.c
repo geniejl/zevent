@@ -116,22 +116,6 @@ int ap_max_daemons_limit = -1;
 
 static ap_pod_t *pod;
 
-/* *Non*-shared http_main globals... */
-
-
-/* The worker MPM respects a couple of runtime flags that can aid
- * in debugging. Setting the -DNO_DETACH flag will prevent the root process
- * from detaching from its controlling terminal. Additionally, setting
- * the -DONE_PROCESS flag (which implies -DNO_DETACH) will get you the
- * child_main loop running in the process which originally started up.
- * This gives you a pretty nice debugging environment.  (You'll get a SIGHUP
- * early in standalone_main; just continue through.  This is the server
- * trying to kill off any child processes which it might have lying
- * around --- Apache doesn't keep track of their pids, it just sends
- * SIGHUP to the process group, ignoring it in the root process.
- * Continue through and you'll be fine.).
- */
-
 static int one_process = 0;
 
 #ifdef DEBUG_SIGSTOP

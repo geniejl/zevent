@@ -41,7 +41,6 @@
 
 extern int ap_threads_per_child;
 extern int ap_max_daemons_limit;
-extern char ap_coredump_dir[MAX_STRING_LEN];
 
 #endif /* APACHE_MPM_EVENT_H */
 /** @} */
