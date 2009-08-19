@@ -29,21 +29,27 @@
 #error The Event MPM requires APR threads, but they are unavailable.
 #endif
 
-#include "zevent_config.h"
-#include "zevent_hooks.h"
+#define CORE_PRIVATE
+
+#include "ap_config.h"
+#include "ap_hooks.h"
 #include "server.h"
 #include "iniparser.h"
 #include "dictionary.h"
-#include "event.h"
+#include "ap_mpm.h"
 #include "pod.h"
 #include "mpm_common.h"
 #include "ap_listen.h"
 #include "scoreboard.h"
 #include "fdqueue.h"
+#include "mpm_default.h"
 #include "log.h"
 
 #include <signal.h>
 
+/*
+ * Actual definitions of config globals
+ */
 static dictionary *d = NULL;
 static char *log = NULL;
 int ap_threads_per_child = 0;   /* Worker threads per child */

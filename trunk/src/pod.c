@@ -1,6 +1,4 @@
-#include "apr_portable.h"
 #include "pod.h"
-#include "server.h"
 
 #if APR_HAVE_UNISTD_H
 #include <unistd.h>

@@ -17,8 +17,9 @@
 #include <unistd.h>
 #endif
 
+#define CORE_PRIVATE
 
-#include "zevent_config.h"
+#include "ap_config.h"
 #include "util_time.h"
 
 static apr_file_t *logfile = NULL;

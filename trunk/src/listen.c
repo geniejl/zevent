@@ -6,9 +6,11 @@
 #define APR_WANT_STRFUNC
 #include "apr_want.h"
 
-#include "zevent_config.h"
+#define CORE_PRIVATE
+#include "ap_config.h"
 #include "server.h"
 #include "ap_listen.h"
+#include "mpm.h"
 #include "mpm_common.h"
 
 AP_DECLARE_DATA ap_listen_rec *ap_listeners = NULL;

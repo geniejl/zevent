@@ -11,11 +11,13 @@
 #include <sys/types.h>
 #endif
 
-#include "zevent_config.h"
+#include "ap_config.h"
 #include "server.h"
-#include "event.h"
+#include "ap_mpm.h"
 
+#include "mpm.h"
 #include "scoreboard.h"
+
 
 AP_DECLARE_DATA scoreboard *ap_scoreboard_image = NULL;
 AP_DECLARE_DATA const char *ap_scoreboard_fname = NULL;

@@ -13,7 +13,7 @@ IF(APR-UTIL_FOUND)
 ENDIF(APR-UTIL_FOUND)
 
 SET(LIBEVENT_SRC_BUILD 
-	zevent_hooks.c
+	ap_hooks.c
 	iniparser.c
 	dictionary.c
 	event.c
